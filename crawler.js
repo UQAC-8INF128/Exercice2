@@ -2,15 +2,33 @@
 
 const http = require('http');
 const sqlite3 = require('sqlite3').verbose();
+const diacritics = require('diacritics');
 
 const URLs = ['http://uqac.ca'];
 const visites = new Set();
 const sites = new Map();
+const words = new Map();
 let remaining = 100;
 
 const db = new sqlite3.Database('crawler.sqlite3');
 
 function process(url, response) {
+  // Enlever les accents
+  response = diacritics.remove(response);
+  // Convertir en minuscules
+  response = response.toLowerCase();
+
+  const wordList = response.split(/\W+/g);
+  const wordSet = new Set();
+  for (w of wordList) {
+    wordSet.add(w);
+  };
+  for (w of wordSet) {
+    if (!words.has(w))
+      words.set(w, new Set());
+    words.get(w).add(url);
+  }
+
   visites.add(url);
   const liens = response.match(/href="http:\/\/\w*\.uqac\.ca\/[^"]*"/g);
   if (!liens)
@@ -87,9 +105,14 @@ function iterate() {
 
 iterate()
   .then(() => {
+    /*
     sites.forEach((score, lien) => {
       console.log(score, lien);
     });
+    */
+    for (w of words) {
+      console.log(w);
+    }
   })
   .catch((err) => {
     console.error(err);
