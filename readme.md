@@ -33,3 +33,8 @@ Le serveur doit présenter une page de recherche lorsqu'un navigateur la lui dem
 L'utilisateur doit pouvoir tapper des mots clés, et appuyer sur un bouton d'envoi.
 
 Le serveur doit présenter une page listant les différents résultats, avec un tri de pertinence.
+
+## Installation
+
+- Ouvrir un terminal dans le dossier;
+- Exécuter la commande ```npm install``` pour installer les dépendances;
