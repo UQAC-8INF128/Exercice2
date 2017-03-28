@@ -1,0 +1,22 @@
+{
+  "name": "8inf128-exercice2",
+  "version": "1.0.0",
+  "description": "Outil de recherche pour le site de l'UQAC",
+  "main": "crawler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UQAC-8INF128/Exercice2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UQAC-8INF128/Exercice2/issues"
+  },
+  "homepage": "https://github.com/UQAC-8INF128/Exercice2#readme",
+  "dependencies": {
+    "sqlite3": "^3.1.8"
+  }
+}
