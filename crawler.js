@@ -24,7 +24,7 @@ function process(url, response) {
 
 function crawl() {
   const nextURL = URLs.shift();
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const req = http.get(nextURL, (res) => {
       let data = "";
       res.on('data', (d) => data += d);
@@ -33,10 +33,7 @@ function crawl() {
         resolve();
       });
     });
-    req.on('error', (err) => {
-      console.log(err);
-      resolve();
-    });
+    req.on('error', reject);
   });
 }
 
@@ -45,7 +42,11 @@ function iterate() {
     return;
 
   if (URLs.length > 0)
-    return crawl().then(iterate);
+    return crawl()
+      .catch((err) => {
+        console.error(err);
+      })
+      .then(iterate);
 }
 
 iterate()
