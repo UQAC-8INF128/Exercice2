@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 
 const http = require('http');
+const sqlite3 = require('sqlite3').verbose();
+
 const URLs = ['http://uqac.ca'];
 const visites = new Set();
 const sites = new Map();
 let remaining = 100;
+
+const db = new sqlite3.Database('crawler.sqlite3');
 
 function process(url, response) {
   visites.add(url);
@@ -22,18 +26,50 @@ function process(url, response) {
   });
 }
 
-function crawl() {
-  const nextURL = URLs.shift();
+function saveContentToDB(url, data) {
   return new Promise((resolve, reject) => {
-    const req = http.get(nextURL, (res) => {
+    db.run('INSERT INTO `Cache`(`URL`,`contenu`) VALUES (?,?);', [url, data], (err) => {
+      if (err)
+        return reject(err);
+      resolve();
+    });
+  });
+}
+
+function getContentFromDB(url) {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT contenu FROM `Cache` WHERE `URL` = ?;', [url], (err, data) => {
+      if (err || !data || !data.contenu)
+        return reject(err);
+      resolve(data.contenu);
+    });
+  });
+}
+
+function getContentFromWeb(url) {
+  return new Promise((resolve, reject) => {
+    const req = http.get(url, (res) => {
       let data = "";
       res.on('data', (d) => data += d);
       res.on('end', () => {
-        process(nextURL, data);
-        resolve();
+        saveContentToDB(url, data)
+        .then(() => {
+          resolve(data);
+        });
       });
     });
     req.on('error', reject);
+  })
+}
+
+function crawl() {
+  const nextURL = URLs.shift();
+  return getContentFromDB(nextURL)
+  .catch((err) => {
+    return getContentFromWeb(nextURL);
+  })
+  .then((data) => {
+    return process(nextURL, data);
   });
 }
 
@@ -54,4 +90,10 @@ iterate()
     sites.forEach((score, lien) => {
       console.log(score, lien);
     });
+  })
+  .catch((err) => {
+    console.error(err);
+  })
+  .then(() => {
+    db.close();
   });
