@@ -2,7 +2,25 @@
 
 <head>
   <script>
-    function rechercher() {}
+    function rechercher() {
+      const wordElement = document.getElementById("mots");
+      const words = wordElement.value;
+      const req = new XMLHttpRequest();
+      req.open("GET", "/search?words=" + words);
+      req.onload = function() {
+        const resultatElem = document.getElementById("resultats");
+        while (resultatElem.firstChild) {
+          resultatElem.removeChild(resultatElem.firstChild);
+        }
+        const resultData = JSON.parse(req.responseText);
+        for (let url of resultData) {
+          const item = document.createElement('li');
+          item.innerText = url;
+          resultatElem.appendChild(item);
+        }
+      };
+      req.send();
+    }
   </script>
 </head>
 

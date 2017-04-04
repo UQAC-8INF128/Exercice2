@@ -2,6 +2,7 @@
 
 const http = require('http');
 const fs = require('fs');
+const urlParse = require('url').parse;
 const sqlite3 = require('sqlite3').verbose();
 const diacritics = require('diacritics');
 const args = require('yargs').argv;
@@ -117,10 +118,10 @@ function intersection(setA, setB) {
     return intersection;
 }
 
-function findWords () {
+function findWords (searchTerms) {
     return new Promise((resolve, reject) => {
         let result;
-        for (var arg of args._) {
+        for (var arg of searchTerms) {
             let currentSet = words.get(arg);
             if (!currentSet)
               return reject("Le mot " + arg + " est introuvable.");
@@ -133,7 +134,7 @@ function findWords () {
 
         if (result && result.size > 0)
           return resolve(result);
-        return reject("Les " + args._.length + " mots n'ont pas de lien en commun.");
+        return reject("Les " + searchTerms.length + " mots n'ont pas de lien en commun.");
     });
 }
 
@@ -148,7 +149,9 @@ function sortResults(urlSet) {
 }
 
 iterate()
-  .then(findWords)
+  .then(() => {
+    return findWords(args._);
+  })
   .then(sortResults)
   .then((results) => {
     console.log("Résultat:", results);
@@ -161,8 +164,22 @@ iterate()
   });
 
   const serveur = http.createServer((req, res) => {
+    const urlData = urlParse(req.url, true);
+
     if (req.url.endsWith('/'))
       req.url += 'index.html';
+
+    if (urlData.pathname === '/search') {
+      return findWords(urlData.query.words.split(' '))
+      .then(sortResults)
+      .catch(() => {
+        return [];
+      })
+      .then((results) => {
+        res.write(JSON.stringify(results));
+        res.end();
+      });
+    }
 
     if (req.url === '/time') {
       const now = new Date();
