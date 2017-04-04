@@ -118,17 +118,20 @@ function intersection(setA, setB) {
 
 function findWords () {
     return new Promise((resolve, reject) => {
-
         let result;
         for (var arg of args._) {
             let currentSet = words.get(arg);
-            if (!currentSet) reject("Le mot " + arg + " est introuvable.");
-            if (!result)result = currentSet;
-            else result = intersection(result, currentSet);
+            if (!currentSet)
+              return reject("Le mot " + arg + " est introuvable.");
 
+            if (!result)
+              result = currentSet;
+            else
+              result = intersection(result, currentSet);
         }
-        console.log("Résultat:", result);
-        if (result && result.size > 0) return resolve();
+
+        if (result && result.size > 0)
+          return resolve(result);
         return reject("Les " + args._.length + " mots n'ont pas de lien en commun.");
     });
 }
@@ -142,10 +145,12 @@ iterate()
       */
       return findWords();
   })
+  .then((results) => {
+    console.log("Résultat:", results);
+  })
   .catch((err) => {
     console.error(err);
   })
   .then(() => {
     db.close();
   });
-  
