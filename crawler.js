@@ -135,9 +135,11 @@ function findWords () {
 
 iterate()
   .then(() => {
+    /*
       for (w of words) {
         console.log(w);
       }
+      */
       return findWords();
   })
   .catch((err) => {
