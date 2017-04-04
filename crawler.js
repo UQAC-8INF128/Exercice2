@@ -99,7 +99,7 @@ function iterate() {
   if (URLs.length > 0)
     return crawl()
       .catch((err) => {
-        console.error(err);
+        //console.error(err);
       })
       .then(iterate);
 }
