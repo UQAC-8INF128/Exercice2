@@ -136,15 +136,19 @@ function findWords () {
     });
 }
 
+function sortResults(urlSet) {
+  function urlSort(a, b) {
+    return sites.get(b) - sites.get(a);
+  }
+
+  const urlList = Array.from(urlSet);
+  urlList.sort(urlSort);
+  return urlList;
+}
+
 iterate()
-  .then(() => {
-    /*
-      for (w of words) {
-        console.log(w);
-      }
-      */
-      return findWords();
-  })
+  .then(findWords)
+  .then(sortResults)
   .then((results) => {
     console.log("Résultat:", results);
   })
