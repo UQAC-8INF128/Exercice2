@@ -3,6 +3,7 @@
 const http = require('http');
 const sqlite3 = require('sqlite3').verbose();
 const diacritics = require('diacritics');
+const args = require('yargs').argv;
 
 const URLs = ['http://uqac.ca'];
 const visites = new Set();
@@ -103,16 +104,41 @@ function iterate() {
       .then(iterate);
 }
 
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
+function intersection(setA, setB) {
+    var intersection = new Set();
+    for (var elem of setB) {
+        if (setA.has(elem)) {
+            intersection.add(elem);
+        }
+    }
+    return intersection;
+}
+
+function findWords () {
+    return new Promise((resolve, reject) => {
+
+        let result;
+        for (var arg of args._) {
+            let currentSet = words.get(arg);
+            if (!currentSet) reject("Le mot " + arg + " est introuvable.");
+            if (!result)result = currentSet;
+            else result = intersection(result, currentSet);
+
+        }
+        console.log("Résultat:", result);
+        if (result && result.size > 0) return resolve();
+        return reject("Les " + args._.length + " mots n'ont pas de lien en commun.");
+    });
+}
+
 iterate()
   .then(() => {
-    /*
-    sites.forEach((score, lien) => {
-      console.log(score, lien);
-    });
-    */
-    for (w of words) {
-      console.log(w);
-    }
+      for (w of words) {
+        console.log(w);
+      }
+      return findWords();
   })
   .catch((err) => {
     console.error(err);
@@ -120,3 +146,4 @@ iterate()
   .then(() => {
     db.close();
   });
+  
