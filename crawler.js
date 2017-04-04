@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const http = require('http');
+const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const diacritics = require('diacritics');
 const args = require('yargs').argv;
@@ -158,3 +159,25 @@ iterate()
   .then(() => {
     db.close();
   });
+
+  const serveur = http.createServer((req, res) => {
+    if (req.url.endsWith('/'))
+      req.url += 'index.html';
+
+    if (req.url === '/time') {
+      const now = new Date();
+      const nowTime = +now;
+      res.write(JSON.stringify(nowTime));
+      res.end();
+      return;
+    }
+
+    try {
+      const contenu = fs.readFileSync('.' + req.url);
+      res.write(contenu);
+    } catch (e) {
+      res.status = 404;
+    }
+    res.end();
+  });
+  serveur.listen(8888);

@@ -38,3 +38,7 @@ Le serveur doit présenter une page listant les différents résultats, avec un 
 
 - Ouvrir un terminal dans le dossier;
 - Exécuter la commande ```npm install``` pour installer les dépendances;
+
+## Utilisation
+
+Le serveur écoute sur le port #8888. On peut y accéder grâce à un navigateur web à l'adresse [http://localhost:8888](http://localhost:8888).
