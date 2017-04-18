@@ -15,7 +15,12 @@
         const resultData = JSON.parse(req.responseText);
         for (let url of resultData) {
           const item = document.createElement('li');
-          item.innerText = url;
+          const link = document.createElement('a');
+          const text = document.createTextNode(url);
+          link.appendChild(text);
+          link.href = url;
+          link.target = '_blank';
+          item.appendChild(link);
           resultatElem.appendChild(item);
         }
       };
