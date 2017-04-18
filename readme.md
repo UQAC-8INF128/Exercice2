@@ -42,3 +42,16 @@ Le serveur doit présenter une page listant les différents résultats, avec un 
 ## Utilisation
 
 Le serveur écoute sur le port #8888. On peut y accéder grâce à un navigateur web à l'adresse [http://localhost:8888](http://localhost:8888).
+
+## Résumé du programme
+
+On met un nombre maximum de pages à explorer (100).
+On visite les liens qui contiennent "uqac.ca".
+On utilise sqlite3 pour conserver les URLs et leur contenu.
+On prend le contenu de chaque page, et on sépare chaque mot. On enlève avant les accents et les minuscules.
+Pour chaque mot, on a une liste de pages contenant le mot.
+On cherche les URLs contenant les mots tappés dans le terminal.
+Le résultat est l'intersection des URLs des mots tappés.
+- Premier mot : On cherche les URLs qui l'inclu.
+- Deuxieme mot : À partir des URLs trouvés en premier, on cherche lesquels contient le deuxieme mot.
+- Troisieme mot : Idem
